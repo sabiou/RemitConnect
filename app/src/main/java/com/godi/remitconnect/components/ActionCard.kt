@@ -20,22 +20,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.godi.remitconnect.R
-import com.godi.remitconnect.ui.theme.RemitConnectTheme
 
 data class CardOption(val title: String, val icon: Int)
 
 @Composable
 fun ActionCard(
     option: CardOption,
-    modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
     Column(
-        modifier
+        modifier = Modifier
             .clip(RoundedCornerShape(16.dp))
             .clickable { onClick() }
             .background(Color.White)
@@ -65,13 +61,5 @@ fun ActionCard(
             fontSize = 15.sp,
             fontWeight = FontWeight.Medium
         )
-    }
-}
-
-@Composable
-@Preview
-fun PreviewActionCard() {
-    RemitConnectTheme {
-        ActionCard(CardOption("Withdrawn Money", R.drawable.wallet_minus)) {}
     }
 }

@@ -16,14 +16,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.godi.remitconnect.R
 import com.godi.remitconnect.ui.screens.NewRecipientScreen
 import com.godi.remitconnect.ui.screens.PreviousRecipientScreen
-import com.godi.remitconnect.ui.theme.RemitConnectTheme
 
 @Composable
 fun CustomTabs(
@@ -31,16 +31,17 @@ fun CustomTabs(
     modifier: Modifier = Modifier
 ) {
     var selectedIndex by remember { mutableIntStateOf(0) }
-
-    val list = listOf("Previous recipients", "New recipient")
+    val list = listOf(stringResource(R.string.previous_recipients), stringResource(R.string.new_recipient))
 
     TabRow(
         selectedTabIndex = selectedIndex,
-        indicator = {},
+        indicator = {
+        },
         modifier = modifier
             .fillMaxWidth()
             .size(327.dp, 48.dp)
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(8.dp)),
+        divider = {}
     ) {
         list.forEachIndexed { index, text ->
             val selected = selectedIndex == index
@@ -68,17 +69,8 @@ fun CustomTabs(
             )
         }
     }
-    // Content based on selected tab index
     when (selectedIndex) {
-        0 -> PreviousRecipientScreen()
+        0 -> PreviousRecipientScreen(navController)
         1 -> NewRecipientScreen(navController)
-    }
-}
-
-@Composable
-@Preview
-fun PreviewCustomTabs() {
-    RemitConnectTheme {
-        //CustomTabs()
     }
 }

@@ -2,7 +2,16 @@ package com.godi.remitconnect.ui.countrypicker
 
 import com.godi.remitconnect.R
 
-data class CountryCode(
+/**
+ * Represents information about a country.
+ *
+ * @property countryCode The country code of the country.
+ * @property countryPhoneCode The phone code of the country.
+ * @property currencyCode The currency code of the country.
+ * @property countryName The name of the country.
+ * @property flagResID The resource ID of the country's flag.
+ */
+data class Country(
     var countryCode: String,
     val countryPhoneCode: String = "",
     val currencyCode: String = "",
@@ -10,6 +19,12 @@ data class CountryCode(
     val flagResID: Int = 0
 )
 
+/**
+ * Returns the flag resource ID for the given country name.
+ *
+ * @param countryName The name of the country.
+ * @return The flag resource ID for the country.
+ */
 fun getFlags(countryName: String): Int {
     return when (countryName) {
         "bj" -> R.drawable.flag_benin
@@ -20,11 +35,16 @@ fun getFlags(countryName: String): Int {
     }
 }
 
-fun getCountriesList(): List<CountryCode> {
-    val countries: MutableList<CountryCode> = ArrayList()
-    countries.add(CountryCode("bj", "+229", "XOF", "Benin"))
-    countries.add(CountryCode("ma", "+212", "MAD","Morocco"))
-    countries.add(CountryCode("tg", "+228", "XOF","Togo"))
-    countries.add(CountryCode("sn", "+221", "XOF","Senegal"))
+/**
+ * Returns a list of countries.
+ *
+ * @return The list of countries.
+ */
+fun getCountriesList(): List<Country> {
+    val countries: MutableList<Country> = ArrayList()
+    countries.add(Country("bj", "+229", "XOF", "Benin"))
+    countries.add(Country("ma", "+212", "MAD","Morocco"))
+    countries.add(Country("tg", "+228", "XOF","Togo"))
+    countries.add(Country("sn", "+221", "XOF","Senegal"))
     return countries
 }

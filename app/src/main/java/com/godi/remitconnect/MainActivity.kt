@@ -63,6 +63,11 @@ fun MainScreen() {
     )
 }
 
+/**
+ * Composable function that defines the navigation graph for RemitConnect app.
+ *
+ * @param navController The NavHostController used for navigation.
+ */
 @Composable
 fun RemitConnectNavGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = NavigationItem.Home.route) {
@@ -73,7 +78,7 @@ fun RemitConnectNavGraph(navController: NavHostController) {
             CardScreen()
         }
         composable(NavigationItem.Send.route) {
-            SendMoneyScreenGraph(navController)
+            SendMoneyScreenGraph()
         }
         composable(NavigationItem.Tontines.route) {
             TontineScreen()
