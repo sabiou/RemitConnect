@@ -17,20 +17,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.godi.remitconnect.R
-import com.godi.remitconnect.ui.theme.RemitConnectTheme
+import com.godi.remitconnect.ui.theme.CustomTheme
 
 data class SendingOption(val title: String, val icon: ImageVector)
 
 @Composable
 fun SendingOptionsCard(
     option: SendingOption,
-    onClick: ()-> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -45,7 +45,7 @@ fun SendingOptionsCard(
             modifier = Modifier
                 .size(40.dp)
                 .background(
-                    color = Color(0xFFEDF8F5),
+                    color = CustomTheme.colors.paleMint,
                     shape = RoundedCornerShape(12.dp)
                 ),
             contentAlignment = Alignment.Center
@@ -71,18 +71,8 @@ fun SendingOptionsCard(
             )
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.chevron_right),
-                contentDescription = "Chevron right",
+                contentDescription = stringResource(R.string.chevron_right_desc),
             )
         }
-    }
-}
-
-@Composable
-@Preview
-fun SendingOptionsCard() {
-    RemitConnectTheme {
-        SendingOptionsCard(
-            //SendingOption("Send to Africa", ImageVector.vectorResource(id = R.drawable.send_to_africa))
-        )
     }
 }

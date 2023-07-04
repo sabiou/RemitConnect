@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 /**
- * Now in Android navigation bar item with icon and label content slots. Wraps Material 3
+ * navigation bar item with icon and label content slots. Wraps Material 3
  * [NavigationBarItem].
  *
  * @param selected Whether this item is selected.
@@ -55,7 +55,7 @@ fun RowScope.RemitNavigationBarItem(
 }
 
 /**
- * Now in Android navigation bar with content slot. Wraps Material 3 [NavigationBar].
+ * Navigation bar with content slot. Wraps Material 3 [NavigationBar].
  *
  * @param modifier Modifier to be applied to the navigation bar.
  * @param content Destinations inside the navigation bar. This should contain multiple

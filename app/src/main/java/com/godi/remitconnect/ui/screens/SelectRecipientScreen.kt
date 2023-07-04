@@ -11,15 +11,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.godi.remitconnect.R
 import com.godi.remitconnect.components.CustomTabs
-import com.godi.remitconnect.components.RemitSearchBar
-import com.godi.remitconnect.components.TopBar
-import com.godi.remitconnect.ui.theme.RemitConnectTheme
 
 @Composable
 fun SelectRecipientScreen(
@@ -28,17 +26,25 @@ fun SelectRecipientScreen(
 ) {
     Scaffold(
         topBar = {
-            TopBar()
+            BackButtonTopBar(
+                onClick = {
+                    navController.navigateUp()
+                }
+            )
         },
         content = { padding ->
-            Box(modifier = Modifier.padding(padding)) {
+            Box(
+                modifier = Modifier.padding(
+                    padding
+                )
+            ) {
                 Column(
                     modifier = modifier
                         .padding(start = 24.dp, end = 24.dp)
                         .fillMaxHeight()
                 ) {
                     Text(
-                        text = "Who are you sending to?",
+                        text = stringResource(R.string.who_are_you_sending_to),
                         fontSize = 24.sp,
                         fontWeight = FontWeight(600),
                         lineHeight = 36.sp,
@@ -46,19 +52,9 @@ fun SelectRecipientScreen(
                     Spacer(modifier = Modifier.height(24.dp))
                     CustomTabs(navController)
                     Spacer(modifier = Modifier.height(24.dp))
-                    RemitSearchBar()
-                    Spacer(modifier = Modifier.height(32.dp))
                 }
             }
         },
         containerColor = Color.White
     )
-}
-
-@Composable
-@Preview
-fun SelectRecipientScreenPreview() {
-    RemitConnectTheme {
-        //SelectRecipientScreen()
-    }
 }

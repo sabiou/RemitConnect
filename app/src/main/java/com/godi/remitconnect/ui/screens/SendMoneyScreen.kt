@@ -1,21 +1,34 @@
 package com.godi.remitconnect.ui.screens
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -27,16 +40,13 @@ import androidx.navigation.navArgument
 import com.godi.remitconnect.R
 import com.godi.remitconnect.components.SendingOption
 import com.godi.remitconnect.components.SendingOptionsCard
-import com.godi.remitconnect.components.TopBar
 import com.godi.remitconnect.data.model.RecipientDetails
-import com.godi.remitconnect.ui.theme.RemitConnectTheme
+import com.godi.remitconnect.ui.theme.CustomTheme
 
 @Composable
 fun SendMoneyScreen(
     navController: NavHostController,
-    modifier: Modifier = Modifier
 ) {
-
     val monecoBalance =
         SendingOption("To Moneco balance", ImageVector.vectorResource(R.drawable.moneco_balance))
     val bankTransfer =
@@ -46,36 +56,37 @@ fun SendMoneyScreen(
 
     Scaffold(
         topBar = {
-            TopBar()
+            CloseButtonTopBar(
+                onClick = {
+                }
+            )
         },
         content = { padding ->
             Box(
                 modifier = Modifier.padding(padding)
             ) {
                 Column(
-                    modifier = modifier
+                    modifier = Modifier
                         .fillMaxHeight()
                 ) {
                     Text(
-                        text = "Send money",
+                        text = stringResource(R.string.send_money),
                         fontSize = 24.sp,
                         fontWeight = FontWeight(600),
                         lineHeight = 36.sp,
                         modifier = Modifier.padding(start = 24.dp)
                     )
                     Spacer(modifier = Modifier.height(24.dp))
-                    Divider(
-                        thickness = 0.5.dp
-                    )
                     SendingOptionsCard(
                         monecoBalance,
                         onClick = {}
                     )
-                    Divider(thickness = 0.5.dp)
+                    Divider(thickness = Dp.Hairline)
                     SendingOptionsCard(
                         bankTransfer,
                         onClick = {}
                     )
+                    Divider(thickness = Dp.Hairline)
                     SendingOptionsCard(
                         sendToAfrica,
                         onClick = {
@@ -89,8 +100,11 @@ fun SendMoneyScreen(
     )
 }
 
+/**
+ * Composable function for defining the navigation graph for the send money flow.
+ */
 @Composable
-fun SendMoneyScreenGraph(navController: NavHostController) {
+fun SendMoneyScreenGraph() {
     val nestedNavController = rememberNavController()
 
     NavHost(navController = nestedNavController, startDestination = "sendMoney") {
@@ -132,20 +146,10 @@ fun SendMoneyScreenGraph(navController: NavHostController) {
                 navArgument("lastName") { type = NavType.StringType },
                 navArgument("mobileWallet") { type = NavType.StringType }
             )
-        ) { backStackEntry ->
-            val selectedCountryCode = backStackEntry.arguments?.getString("selectedCountryCode")
-            val phoneNumber = backStackEntry.arguments?.getString("phoneNumber")
-            val firstName = backStackEntry.arguments?.getString("firstName")
-            val lastName = backStackEntry.arguments?.getString("lastName")
-            val mobileWallet = backStackEntry.arguments?.getString("mobileWallet")
-            val recipientDetails = RecipientDetails(
-                selectedCountryCode,
-                phoneNumber,
-                firstName,
-                lastName,
-                mobileWallet
+        ) {
+            SendingMoneyScreen(
+                nestedNavController
             )
-            SendingMoneyScreen(recipientDetails = recipientDetails, navController = nestedNavController)
         }
         composable("success") {
             SuccessScreen(nestedNavController)
@@ -153,10 +157,42 @@ fun SendMoneyScreenGraph(navController: NavHostController) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@Preview
-fun SendMoneyScreenPreview() {
-    RemitConnectTheme {
-        //SendMoneyScreen()
-    }
+fun CloseButtonTopBar(
+    onClick: () -> Unit
+) {
+    TopAppBar(
+        modifier = Modifier
+            .padding(end = 12.dp, top = 12.dp, bottom = 12.dp)
+            .fillMaxWidth()
+            .height(40.dp),
+        title = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .clickable { onClick() }
+                        .size(40.dp)
+                        .fillMaxWidth()
+                        .background(
+                            color = CustomTheme.colors.silverGrey,
+                            shape = RoundedCornerShape(12.dp)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.close),
+                        contentDescription = "close",
+                    )
+                }
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            Color.White
+        )
+    )
 }

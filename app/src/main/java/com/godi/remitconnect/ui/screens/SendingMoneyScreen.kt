@@ -3,6 +3,7 @@ package com.godi.remitconnect.ui.screens
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
@@ -28,6 +30,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -39,77 +42,81 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.godi.remitconnect.R
 import com.godi.remitconnect.components.ButtonPrimary
-import com.godi.remitconnect.components.TopBar
-import com.godi.remitconnect.data.db.RecipientEntity
 import com.godi.remitconnect.data.db.TransactionEntity
-import com.godi.remitconnect.data.model.RecipientDetails
-import com.godi.remitconnect.ui.theme.RemitConnectTheme
+import com.godi.remitconnect.ui.theme.CustomTheme
+import com.godi.remitconnect.utils.formatAmountToXOF
+import com.godi.remitconnect.utils.formatCurrency
 import com.godi.remitconnect.viewmodel.SendingMoneyViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 @Composable
 fun SendingMoneyScreen(
-    modifier: Modifier = Modifier,
-    recipientDetails: RecipientDetails,
     navController: NavController,
-    viewModel: SendingMoneyViewModel = hiltViewModel()
 ) {
-    val conversionRate = 571.00
+    val viewModel: SendingMoneyViewModel = hiltViewModel()
+    val backStackEntry = navController.currentBackStackEntry
+    val arguments = backStackEntry?.arguments
+
+    val account = viewModel.account.collectAsState()
+
+    val selectedCountryCode = arguments?.getString("selectedCountryCode")
+    val phoneNumber = arguments?.getString("phoneNumber")
+    val firstName = arguments?.getString("firstName")
+    val lastName = arguments?.getString("lastName")
+    val mobileWallet = arguments?.getString("mobileWallet")
+
+    val conversionRate = 655.94
     var amount by rememberSaveable { mutableStateOf("") }
+
     var isTextFieldEmpty by rememberSaveable { mutableStateOf(true) }
 
-    val recipientAmount = rememberSaveable(amount) {
-        amount.toFloatOrNull()?.times(conversionRate) ?: 0.0f
-    }
     var confirmBottomSheetVisible by rememberSaveable { mutableStateOf(false) }
 
     if (confirmBottomSheetVisible) {
+        val transaction = TransactionEntity(
+            country = selectedCountryCode,
+            phoneNumber = phoneNumber,
+            firstName = firstName,
+            lastName = lastName,
+            mobile_wallet = mobileWallet,
+            amount = amount.toDouble()
+        )
         ConfirmationBottomSheet(
-            amount,
-            recipientDetails.selectedCountryCode!!,
-            recipientDetails.phoneNumber!!,
-            recipientDetails.firstName!!,
-            recipientDetails.lastName!!,
-            recipientDetails.mobileWallet!!,
-            navController
+            transaction,
+            navController,
+            onConfirm = {
+                viewModel.saveTransaction(transaction)
+            },
         ) {
             confirmBottomSheetVisible = false
-            val recipient = RecipientEntity(
-                firstName = recipientDetails.firstName,
-                lastName = recipientDetails.lastName,
-                country = recipientDetails.selectedCountryCode,
-                phoneNumber = recipientDetails.phoneNumber,
-                mobile_wallet = recipientDetails.mobileWallet
-            )
-            viewModel.saveTransaction(
-                TransactionEntity(recipient = recipient, amount = amount)
-            )
         }
     }
     Scaffold(
         topBar = {
-            TopBar()
+            BackButtonTopBar(
+                onClick = {
+                    navController.navigateUp()
+                }
+            )
         },
         content = { padding ->
             Box(
                 modifier = Modifier.padding(padding)
             ) {
                 Column(
-                    modifier = modifier
+                    modifier = Modifier
                         .padding(start = 24.dp, end = 24.dp)
                         .fillMaxHeight()
                         .fillMaxWidth()
@@ -129,14 +136,13 @@ fun SendingMoneyScreen(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Box(
-                        modifier = modifier
+                        modifier = Modifier
                             .fillMaxWidth()
                             .size(327.dp, 97.dp)
                             .border(
                                 1.dp,
-                                color = if (isTextFieldEmpty) Color(0xFFF2F3F4) else Color(
-                                    0xFF08A075
-                                ),
+                                color = if (isTextFieldEmpty) CustomTheme.colors.silverGrey else
+                                    MaterialTheme.colorScheme.primaryContainer,
                                 shape = RoundedCornerShape(8.dp)
                             )
                             .clip(RoundedCornerShape(8.dp))
@@ -146,10 +152,11 @@ fun SendingMoneyScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween,
                             ) {
+                                val maxChar = 5
                                 TextField(
                                     value = amount,
                                     onValueChange = {
-                                        amount = it
+                                        if (it.length <= maxChar) amount = it
                                         isTextFieldEmpty = it.isEmpty()
                                     },
                                     colors = TextFieldDefaults.colors(
@@ -161,18 +168,18 @@ fun SendingMoneyScreen(
                                     textStyle = TextStyle(
                                         fontSize = 18.sp,
                                         fontWeight = FontWeight.W600,
-                                        color = Color(0xFF00122C),
+                                        color = CustomTheme.colors.midnightBlue,
                                         fontFamily = FontFamily(
                                             Font(R.font.outfit_bold)
                                         )
                                     ),
                                     placeholder = {
                                         Text(
-                                            text = "00",
+                                            text = "0.0",
                                             style = TextStyle(
                                                 fontSize = 18.sp,
                                                 fontWeight = FontWeight.W600,
-                                                color = Color(0xFF00122C),
+                                                color = CustomTheme.colors.midnightBlue,
                                                 fontFamily = FontFamily(
                                                     Font(R.font.outfit_bold)
                                                 )
@@ -181,37 +188,42 @@ fun SendingMoneyScreen(
                                     },
                                     keyboardOptions = KeyboardOptions(
                                         keyboardType = KeyboardType.Number
+                                    ),
+                                    singleLine = true,
+                                    maxLines = 1,
+                                    keyboardActions = KeyboardActions(
+                                        onNext = KeyboardActions.Default.onNext
                                     )
                                 )
                                 Text(
                                     text = "EUR",
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.W600,
-                                    color = Color(0xFF7F8895)
+                                    color = CustomTheme.colors.duskGray
                                 )
                             }
                             Box(
-                                modifier = modifier
+                                modifier = Modifier
                                     .fillMaxWidth()
                                     .size(327.dp, 40.dp)
                                     .background(
                                         if (!isTextFieldEmpty) MaterialTheme.colorScheme.surfaceVariant
-                                        else Color(0xFFF2F3F4)
+                                        else CustomTheme.colors.silverGrey
                                     )
                             ) {
                                 Row(
-                                    modifier = modifier
+                                    modifier = Modifier
                                         .fillMaxHeight()
                                         .fillMaxWidth()
                                         .padding(start = 8.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
-                                        text = "Your current balance is 230 EUR",
+                                        text = "Your current balance is ${formatCurrency(account.value?.amount ?: 0.0)}",
                                         fontSize = 12.sp,
-                                        color = if (!isTextFieldEmpty) MaterialTheme.colorScheme.primary else Color(
-                                            0xFF00122C
-                                        )
+                                        color = if (!isTextFieldEmpty)
+                                            MaterialTheme.colorScheme.primary
+                                        else CustomTheme.colors.midnightBlue
                                     )
                                 }
                             }
@@ -223,25 +235,28 @@ fun SendingMoneyScreen(
                     )
                     {
                         Text(
-                            text = "Yearly free remittances",
+                            text = stringResource(R.string.yearly_free_remittances),
                             fontSize = 16.sp,
                             fontWeight = FontWeight.W500,
                             lineHeight = 36.sp,
                         )
                         Text(
-                            text = "Remittances are free with Moneco until you reach your limit, which resets every year.",
+                            text = stringResource(R.string.remittances_are_free_with_moneco),
                             fontSize = 14.sp,
-                            color = Color(0xFF7F8895)
+                            color = CustomTheme.colors.duskGray
                         )
                         Text(
-                            text = "Check number of free remittance remaining",
+                            modifier = Modifier.clickable {
+
+                            },
+                            text = stringResource(R.string.check_number_of_free_remittance_remaining),
                             fontSize = 14.sp,
                             fontWeight = FontWeight(600),
-                            color = Color(0xFF1B98E0)
+                            color = CustomTheme.colors.ceruleanBlue
                         )
                         Spacer(modifier = Modifier.height(28.dp))
                         Text(
-                            text = "Fees breakdown",
+                            text = stringResource(R.string.fees_breakdown),
                             fontSize = 16.sp,
                             fontWeight = FontWeight.W500,
                             lineHeight = 36.sp,
@@ -259,16 +274,22 @@ fun SendingMoneyScreen(
                             fees.forEach { fee ->
                                 FeesRow(fee = fee)
                             }
-                            DashedLine()
+                            DashedLine(
+                                lineColor = CustomTheme.colors.slateGray
+                            )
                             RecipientAmountRow(
-                                text = "Recipient gets",
-                                calculatedValue = recipientAmount.toString()
+                                text = stringResource(R.string.recipient_gets),
+                                calculatedValue = "${
+                                    amount.toDoubleOrNull()?.times(conversionRate)
+                                }"
                             )
                             Spacer(modifier = Modifier.weight(1f))
                             ButtonPrimary(
-                                text = "Send",
+                                textResId = R.string.send,
                                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
-                                onClick = { confirmBottomSheetVisible = true },
+                                onClick = {
+                                    confirmBottomSheetVisible = true
+                                },
                                 isEnabled = !isTextFieldEmpty
                             )
                         }
@@ -282,13 +303,9 @@ fun SendingMoneyScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConfirmationBottomSheet(
-    amount: String,
-    selectedCountryCode: String,
-    phoneNumber: String,
-    firstName: String,
-    lastName: String,
-    optionName: String,
+    transaction: TransactionEntity,
     navController: NavController,
+    onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     val modalBottomSheetState = rememberModalBottomSheetState()
@@ -309,13 +326,19 @@ fun ConfirmationBottomSheet(
                 text = "Confirm transfer",
                 fontSize = 24.sp,
                 fontWeight = FontWeight(600),
-                color = Color(0xFF00122C)
+                color = CustomTheme.colors.midnightBlue
             )
-            ConfirmationRow(description = "You're sending", text = "$amount XOF")
-            ConfirmationRow(description = "To", text = "$firstName $lastName")
+            ConfirmationRow(
+                description = "You're sending",
+                text = formatAmountToXOF(transaction.amount!!)
+            )
+            ConfirmationRow(
+                description = "To",
+                text = "${transaction.firstName} ${transaction.lastName}"
+            )
             ConfirmationRow(
                 description = "Via",
-                text = "$optionName : $selectedCountryCode $phoneNumber"
+                text = "${transaction.mobile_wallet} : ${transaction.country} ${transaction.phoneNumber}"
             )
             Box(
                 modifier = Modifier
@@ -325,6 +348,7 @@ fun ConfirmationBottomSheet(
             ) {
                 Button(
                     onClick = {
+                        onConfirm()
                         coroutineScope.launch {
                             navController.navigate("success") {
                                 popUpTo(navController.graph.startDestinationId) {
@@ -347,7 +371,8 @@ fun ConfirmationBottomSheet(
 
 @Composable
 fun DashedLine(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    lineColor: Color
 ) {
     val pathEffect = PathEffect.dashPathEffect(floatArrayOf(20f, 20f), 0f)
     Canvas(
@@ -356,7 +381,7 @@ fun DashedLine(
             .height(1.dp)
     ) {
         drawLine(
-            color = Color(0xFF7F8895),
+            color = lineColor,
             start = Offset(0f, 0f),
             end = Offset(size.width, 0f),
             pathEffect = pathEffect
@@ -379,12 +404,12 @@ fun FeesRow(
         Text(
             text = fee.name,
             fontSize = 14.sp,
-            color = Color(0xFF7F8895)
+            color = CustomTheme.colors.duskGray
         )
         Text(
             text = fee.amount,
             fontSize = 14.sp,
-            color = Color(0xFF00122C)
+            color = CustomTheme.colors.midnightBlue
         )
     }
 }
@@ -403,12 +428,12 @@ fun RecipientAmountRow(
         Text(
             text = text,
             fontSize = 14.sp,
-            color = Color(0xFF7F8895)
+            color = CustomTheme.colors.duskGray
         )
         Text(
             text = "$calculatedValue XOF",
             fontSize = 18.sp,
-            color = Color(0xFF00122C),
+            color = CustomTheme.colors.midnightBlue,
             fontWeight = FontWeight.W600,
         )
     }
@@ -425,21 +450,13 @@ fun ConfirmationRow(
         Text(
             text = description,
             fontSize = 14.sp,
-            color = Color(0xFF7F8895)
+            color = CustomTheme.colors.duskGray
         )
         Text(
             text = text,
             fontSize = 18.sp,
             fontWeight = FontWeight(600),
-            color = Color(0xFF00122C)
+            color = CustomTheme.colors.midnightBlue
         )
-    }
-}
-
-@Composable
-@Preview
-fun PreviewSendingMoneyScreen() {
-    RemitConnectTheme {
-        //SendingMoneyScreen(navController = rememberNavController())
     }
 }

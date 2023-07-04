@@ -2,12 +2,16 @@ package com.godi.remitconnect.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,59 +20,58 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.godi.remitconnect.R
-import com.godi.remitconnect.ui.theme.RemitConnectTheme
+import com.godi.remitconnect.data.db.TransactionEntity
+import com.godi.remitconnect.ui.theme.CustomTheme
 
 @Composable
 fun ContactListItem(
-    modifier: Modifier = Modifier
+    transaction: TransactionEntity,
+    onClick: () -> Unit
 ) {
     Row(
-        modifier = modifier
-            .size(375.dp, 77.dp)
+        modifier = Modifier
+            .clickable { onClick() }
+            .height(77.dp)
+            .fillMaxWidth()
             .background(Color.White),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.picture_1),
-                contentDescription = "Contact picture",
-                modifier = modifier.size(40.dp)
+        Image(
+            modifier = Modifier
+                .size(40.dp)
+                .fillMaxWidth()
+                .background(
+                    color = CustomTheme.colors.babyBlue,
+                    shape = RoundedCornerShape(12.dp)
+                ),
+            painter = painterResource(id = R.drawable.picture_1),
+            contentDescription = stringResource(R.string.contact_picture_desc),
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Column(Modifier.weight(1f)) {
+            Text(
+                text = "${transaction.firstName} ${transaction.lastName}",
+                fontWeight = FontWeight.W500,
+                fontSize = 16.sp,
+                lineHeight = 24.sp
             )
-            Column {
-                Text(
-                    "Ralph Edwards",
-                    fontWeight = FontWeight.W500,
-                    fontSize = 16.sp,
-                    lineHeight = 24.sp
-                )
-                Text(
-                    "+229 98 767 289",
-                    fontWeight = FontWeight.W400,
-                    fontSize = 14.sp,
-                    lineHeight = 21.sp
-                )
-            }
+            Text(
+                text = "${transaction.country} ${transaction.phoneNumber}",
+                fontWeight = FontWeight.W400,
+                fontSize = 14.sp,
+                lineHeight = 21.sp
+            )
         }
         Icon(
             imageVector = ImageVector.vectorResource(id = R.drawable.chevron_right),
-            contentDescription = "Choose",
+            contentDescription = stringResource(R.string.select_desc),
         )
-    }
-}
-
-@Preview
-@Composable
-fun PreviewContactListItem() {
-    RemitConnectTheme {
-        ContactListItem()
     }
 }

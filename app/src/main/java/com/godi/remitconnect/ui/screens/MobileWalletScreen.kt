@@ -25,16 +25,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.godi.remitconnect.R
 import com.godi.remitconnect.components.ButtonPrimary
-import com.godi.remitconnect.components.TopBar
 import com.godi.remitconnect.data.model.RecipientDetails
-import com.godi.remitconnect.ui.theme.RemitConnectTheme
+import com.godi.remitconnect.ui.theme.CustomTheme
 
 @Composable
 fun MobileWalletScreen(
@@ -57,7 +56,11 @@ fun MobileWalletScreen(
 
     Scaffold(
         topBar = {
-            TopBar()
+            BackButtonTopBar(
+                onClick = {
+                    navController.navigateUp()
+                }
+            )
         },
         content = { padding ->
             Column(
@@ -74,7 +77,7 @@ fun MobileWalletScreen(
                     verticalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
                     Text(
-                        text = "Choose a mobile wallet",
+                        text = stringResource(R.string.choose_a_mobile_wallet),
                         fontSize = 24.sp,
                         fontWeight = FontWeight(600),
                         lineHeight = 36.sp,
@@ -99,7 +102,7 @@ fun MobileWalletScreen(
                     }
                 }
                 ButtonPrimary(
-                    text = "Continue",
+                    textResId = R.string.continue_txt,
                     colors = ButtonDefaults.buttonColors(
                         MaterialTheme.colorScheme.primary
                     ),
@@ -127,10 +130,10 @@ fun MobileWalletOptionCard(
     selected: Boolean,
     onSelected: () -> Unit
 ) {
-    val borderColor = if (selected) MaterialTheme.colorScheme.primary else Color(0xFFBFC3CA)
+    val borderColor = if (selected) MaterialTheme.colorScheme.primary else CustomTheme.colors.silverGray
     Surface(
         shape = MaterialTheme.shapes.small,
-        color = Color.White,
+        color = if (selected) CustomTheme.colors.paleMint else Color.White,
         border = BorderStroke(
             width = 1.dp,
             color = borderColor
@@ -149,33 +152,18 @@ fun MobileWalletOptionCard(
                 .padding(16.dp)
         ) {
             Image(
-                painter = painterResource(id = option.optionLogoResource),
-                contentDescription = "Wave mobile money"
+                painter = painterResource(
+                    id = option.optionLogoResource
+                ),
+                contentDescription = option.mobileWallet
             )
             Text(
                 text = option.mobileWallet,
                 fontWeight = FontWeight.W500,
                 fontSize = 16.sp,
-                lineHeight = 24.sp
+                lineHeight = 24.sp,
+                color = if (selected) MaterialTheme.colorScheme.primary else Color.Unspecified,
             )
         }
-    }
-}
-
-@Composable
-@Preview
-fun PreviewMobileWalletOptionCard() {
-    RemitConnectTheme {
-        /*MobileWalletOptionCard(
-            MobileWalletOption("Wave", R.drawable.wave_logo)
-        )*/
-    }
-}
-
-@Composable
-@Preview
-fun PreviewMobileWallet() {
-    RemitConnectTheme {
-        //MobileWalletScreen()
     }
 }

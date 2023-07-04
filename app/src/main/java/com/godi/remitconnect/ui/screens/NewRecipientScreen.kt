@@ -1,6 +1,5 @@
 package com.godi.remitconnect.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
@@ -28,11 +28,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -41,7 +42,7 @@ import com.godi.remitconnect.components.ButtonPrimary
 import com.godi.remitconnect.data.model.RecipientDetails
 import com.godi.remitconnect.ui.countrypicker.CountryPricker
 import com.godi.remitconnect.ui.countrypicker.getCountriesList
-import com.godi.remitconnect.ui.theme.RemitConnectTheme
+import com.godi.remitconnect.ui.theme.CustomTheme
 
 @Composable
 fun NewRecipientScreen(
@@ -51,7 +52,12 @@ fun NewRecipientScreen(
     var phoneNumber by rememberSaveable { mutableStateOf("") }
     var firstName by rememberSaveable { mutableStateOf("") }
     var lastName by rememberSaveable { mutableStateOf("") }
+
     var selectedCountryCode by remember { mutableStateOf(getCountriesList().first().countryPhoneCode) }
+
+    var isPhoneNumberEmpty by rememberSaveable { mutableStateOf(true) }
+    var isFirstNameEmpty by rememberSaveable { mutableStateOf(true) }
+    var isLastNameEmpty by rememberSaveable { mutableStateOf(true) }
 
     Column(
         modifier = modifier
@@ -59,7 +65,7 @@ fun NewRecipientScreen(
             .fillMaxHeight()
     ) {
         Text(
-            text = "Country",
+            text = stringResource(R.string.country),
             fontSize = 14.sp,
             fontWeight = FontWeight(500),
             lineHeight = 21.sp,
@@ -68,7 +74,6 @@ fun NewRecipientScreen(
         CountryPricker(
             pickedCountry = { country ->
                 selectedCountryCode = country.countryPhoneCode
-                Log.i("COUNTRY", selectedCountryCode)
             }
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -83,11 +88,11 @@ fun NewRecipientScreen(
                 modifier = modifier.weight(1f)
             )
             Text(
-                text = "OR ADD MANUALLY",
+                text = stringResource(R.string.or_add_manually),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.W600,
                 lineHeight = 18.sp,
-                color = Color(0xFF7F8895)
+                color = CustomTheme.colors.duskGray
             )
             Divider(
                 modifier = modifier.weight(1f),
@@ -95,11 +100,11 @@ fun NewRecipientScreen(
         }
         Spacer(modifier = Modifier.height(24.dp))
         Text(
-            text = "Phone number",
+            text = stringResource(R.string.phone_number),
             fontSize = 16.sp,
             fontWeight = FontWeight(400),
             lineHeight = 24.sp,
-            color = Color(0xFF00122C)
+            color = CustomTheme.colors.midnightBlue
         )
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
@@ -108,42 +113,55 @@ fun NewRecipientScreen(
             value = phoneNumber,
             onValueChange = {
                 phoneNumber = it
+                isPhoneNumberEmpty = it.isEmpty()
             },
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color(0xFFBFC3CA),
-                unfocusedBorderColor = Color(0xFFBFC3CA),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Next
             ),
-            shape = RoundedCornerShape(8.dp)
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = CustomTheme.colors.silverGray,
+                unfocusedBorderColor = CustomTheme.colors.silverGray,
+            ),
+            shape = RoundedCornerShape(8.dp),
+            singleLine = true,
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(
-            text = "First Name",
+            text = stringResource(R.string.first_name),
             fontSize = 16.sp,
             fontWeight = FontWeight(400),
             lineHeight = 24.sp,
-            color = Color(0xFF00122C)
+            color = CustomTheme.colors.midnightBlue
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(
+            modifier = Modifier.height(8.dp)
+        )
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth(),
             value = firstName,
             onValueChange = {
                 firstName = it
+                isFirstNameEmpty = it.isEmpty()
             },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            ),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color(0xFFBFC3CA),
-                unfocusedBorderColor = Color(0xFFBFC3CA),
+                focusedBorderColor = CustomTheme.colors.silverGray,
+                unfocusedBorderColor = CustomTheme.colors.silverGray,
             ),
             shape = RoundedCornerShape(8.dp)
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(
-            text = "Last Name",
+            text = stringResource(R.string.last_name),
             fontSize = 16.sp,
             fontWeight = FontWeight(400),
             lineHeight = 24.sp,
-            color = Color(0xFF00122C)
+            color = CustomTheme.colors.midnightBlue
         )
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
@@ -152,16 +170,21 @@ fun NewRecipientScreen(
             value = lastName,
             onValueChange = {
                 lastName = it
+                isLastNameEmpty = it.isEmpty()
             },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done
+            ),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color(0xFFBFC3CA),
-                unfocusedBorderColor = Color(0xFFBFC3CA),
+                focusedBorderColor = CustomTheme.colors.silverGray,
+                unfocusedBorderColor = CustomTheme.colors.silverGray,
             ),
             shape = RoundedCornerShape(8.dp)
         )
         Spacer(modifier = Modifier.height(24.dp))
         ButtonPrimary(
-            text = "Continue",
+            textResId = R.string.continue_txt,
             ButtonDefaults.buttonColors(
                 MaterialTheme.colorScheme.primary
             ),
@@ -177,7 +200,7 @@ fun NewRecipientScreen(
                         "mobileWallet/${recipientDetails.selectedCountryCode}/${recipientDetails.phoneNumber}/${recipientDetails.firstName}/${recipientDetails.lastName}"
                     )
             },
-            isEnabled = true
+            isEnabled = !isPhoneNumberEmpty && !isFirstNameEmpty && !isLastNameEmpty
         )
     }
 }
@@ -191,11 +214,11 @@ fun ChooseContactButton() {
             .fillMaxWidth()
             .size(327.dp, 48.dp)
             .border(
-                1.dp, color = Color(0xFFC8EAE1),
+                1.dp, color = CustomTheme.colors.mintGreen,
                 shape = RoundedCornerShape(8.dp)
             ),
         colors = ButtonDefaults.buttonColors(
-            Color(0xFFEDF8F5)
+            CustomTheme.colors.paleMint
         ),
     ) {
         Row(
@@ -207,20 +230,12 @@ fun ChooseContactButton() {
                 contentDescription = "choose contact button"
             )
             Text(
-                text = "Choose a contact",
+                text = stringResource(R.string.choose_a_contact),
                 color = MaterialTheme.colorScheme.primary,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.W600,
                 lineHeight = 24.sp
             )
         }
-    }
-}
-
-@Composable
-@Preview
-fun NewRecipientScreenPreview() {
-    RemitConnectTheme {
-        //NewRecipientScreen()
     }
 }

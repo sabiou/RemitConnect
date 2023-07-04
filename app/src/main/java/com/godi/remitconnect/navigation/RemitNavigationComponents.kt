@@ -12,12 +12,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.godi.remitconnect.ui.theme.CustomTheme
 
+/**
+ * Composable function for the custom bottom navigation bar in the Remit app.
+ *
+ * @param navController The NavController instance for handling navigation.
+ */
 @Composable
 fun RemitBottomBar(
     navController: NavController
@@ -70,7 +75,7 @@ fun RemitBottomBar(
                                 modifier = Modifier.size(24.dp),
                                 painter = painterResource(id = item.icon),
                                 contentDescription = item.title,
-                                tint = Color(0xFF404D61)
+                                tint = CustomTheme.colors.slateBlue
                             )
                         }
                     } else {

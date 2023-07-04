@@ -35,22 +35,30 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.godi.remitconnect.R
-import com.godi.remitconnect.ui.theme.RemitConnectTheme
+import com.godi.remitconnect.ui.theme.CustomTheme
 
+/**
+ * Displays a country picker dialog.
+ *
+ * @param modifier The modifier for styling the composable.
+ * @param isOnlyFlagShow Whether to show only the country flag or both flag and name.
+ * @param defaultSelectedCountry The default selected country.
+ * @param pickedCountry The callback invoked when a country is picked.
+ * @param dialogRounded The corner radius of the country picker dialog.
+ */
 @Composable
 fun CountryPricker(
     modifier: Modifier = Modifier,
     isOnlyFlagShow: Boolean = false,
-    defaultSelectedCountry: CountryCode = getCountriesList().first(),
-    pickedCountry: (CountryCode) -> Unit,
+    defaultSelectedCountry: Country = getCountriesList().first(),
+    pickedCountry: (Country) -> Unit,
     dialogRounded: Int = 12
 ) {
-    val countryList: List<CountryCode> = getCountriesList()
+    val countryList: List<Country> = getCountriesList()
     var isPickCountry by remember { mutableStateOf(defaultSelectedCountry) }
     var isOpenDialog by remember { mutableStateOf(false) }
 
@@ -59,7 +67,7 @@ fun CountryPricker(
         color = Color.White,
         border = BorderStroke(
             width = 1.dp,
-            color = Color(0xFFBFC3CA)
+            color = CustomTheme.colors.silverGray
         ),
         modifier = modifier
             .clip(MaterialTheme.shapes.small)
@@ -105,7 +113,7 @@ fun CountryPricker(
             ) {
                 Text(
                     isPickCountry.countryPhoneCode,
-                    color = Color(0xFF7F8895),
+                    color = CustomTheme.colors.duskGray,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.W400
                 )
@@ -170,13 +178,5 @@ fun CountryPricker(
                 }
             }
         }
-    }
-}
-
-@Composable
-@Preview
-fun CountryPickerPreview() {
-    RemitConnectTheme {
-        CountryPricker(pickedCountry = {})
     }
 }
