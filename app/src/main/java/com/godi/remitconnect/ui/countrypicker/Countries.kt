@@ -22,11 +22,11 @@ data class Country(
 /**
  * Returns the flag resource ID for the given country name.
  *
- * @param countryName The name of the country.
+ * @param countryCode The name of the country.
  * @return The flag resource ID for the country.
  */
-fun getFlags(countryName: String): Int {
-    return when (countryName) {
+fun getFlags(countryCode: String): Int {
+    return when (countryCode) {
         "bj" -> R.drawable.flag_benin
         "ma" -> R.drawable.flag_morocco
         "sn" -> R.drawable.flag_senegal
