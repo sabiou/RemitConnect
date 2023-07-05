@@ -59,7 +59,7 @@ If you encounter any issues while building or running the app, consider the foll
 ## Screenshots
 
 <p align="center">
-  <img src="screenshots/home_screen" alt="Screenshot 1" width="200" />
+  <img src="screenshots/home_screen.png" alt="Screenshot 1" width="200" />
   <img src="screenshots/send_screen.png" alt="Screenshot 4" width="200" />
   <img src="screenshots/previous_recip_screen.png" alt="Screenshot 2" width="200" />
   <img src="screenshots/new_recip_screen.png" alt="Screenshot 3" width="200" />
