@@ -44,4 +44,8 @@
     <string name="send_money">Send money</string>
     <string name="send_to_africa">Send to Africa</string>
     <string name="close_desc">close</string>
+    <string name="Cards">Cards</string>
+    <string name="Home">Home</string>
+    <string name="Settings">Settings</string>
+    <string name="Tontines">Tontines</string>
 </resources>

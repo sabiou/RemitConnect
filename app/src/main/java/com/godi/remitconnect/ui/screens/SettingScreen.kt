@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.godi.remitconnect.R
 import com.godi.remitconnect.components.ComingSoon
 import com.godi.remitconnect.components.TopBar
 
@@ -13,7 +14,8 @@ fun SettingScreen() {
     Scaffold(
         topBar = {
             TopBar(
-                hasTitle = false
+                hasTitle = true,
+                R.string.Settings
             )
         },
         content = {
