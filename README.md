@@ -20,6 +20,16 @@ To build and run the RemitConnect app locally, follow these steps:
 7. Click on the "Run" button in Android Studio or use the keyboard shortcut Shift+F10 to build and run the app on the connected device/emulator.
 8. The RemitConnect app will launch on the device/emulator, and you can explore its features and functionality.
 
+## Screenshots
+
+<p align="center">
+  <img src="screenshots/home_screen.png" alt="Screenshot 1" width="150" />
+  <img src="screenshots/send_screen.png" alt="Screenshot 4" width="150" />
+  <img src="screenshots/previous_recip_screen.png" alt="Screenshot 2" width="150" />
+  <img src="screenshots/new_recip_screen.png" alt="Screenshot 3" width="150" />
+  <img src="screenshots/confirm_send.png" alt="Screenshot 5" width="150" />
+</p>
+
 ## Tech Stack
 
 The RemitConnect app is built using the following technologies and libraries:
@@ -55,5 +65,6 @@ If you encounter any issues while building or running the app, consider the foll
 - If you encounter any specific issues related to the app's functionality or setup, refer to the project's documentation or seek help from the project's maintainers.
 
 - Remember to consult the official Android Studio documentation for more advanced topics or specific troubleshooting steps.
+
 
 Enjoy using the app!
